@@ -8,10 +8,13 @@ interface Cvse {
         day @2 :Int8;
     }
 
-    enum RankValue {
-        domestic @0;   # 国产榜
-        sv @1;  # SV 榜
-        utau @2;    # UTAU 榜
+    struct Rank {
+        enum RankValue {
+            domestic @0;   # 国产榜
+            sv @1;  # SV 榜
+            utau @2;    # UTAU 榜
+        }
+        value @0 :RankValue;
     }
 
     # 对数据库中已有数据的视频，修改其收录信息
@@ -20,7 +23,7 @@ interface Cvse {
     struct ModifyEntry {
         avid @0 :Text;  # 视频 AV 号
         bvid @1 :Text;  # 视频 BV 号
-        ranks @2 :List(RankValue);  # 应收录的榜单，空列表表示都不收录
+        ranks @2 :List(Rank);  # 应收录的榜单，空列表表示都不收录
         isRepublish @3 :Bool;  # 是否为转载
         staffInfo @4 :Text;  # staff 信息
     }
@@ -66,22 +69,21 @@ interface Cvse {
     # 录入旧曲信息
     updateAddressingDataEntry @2 (entries :List(AddressingDataEntry) );
 
-    interface Iterator(T) {
-        getHandle @0 () -> (handle :Int64);
-        # 当遍历完成后，handle 会自动销毁
-        next @1 (handle :Int64, count :Int32) -> (items :List(T), hasMore :Bool);
-    }
+    # interface Iterator(T) {
+    #     getHandle @0 () -> (handle :Int64);
+    #     # 当遍历完成后，handle 会自动销毁
+    #     next @1 (handle :Int64, count :Int32) -> (items :List(T), hasMore :Bool);
+    # }
+    # # 查询数据库中已有的视频
+    # struct VideoQuery {
+    #     avid @0 :Text;
+    #     bvid @1 :Text;
+    # }
+    # getVideoIterator @3 () -> (it :Iterator(VideoQuery) );
 
-    # 查询数据库中已有的视频
-    struct VideoQuery {
-        avid @0 :Text;
-        bvid @1 :Text;
-    }
-    getVideoIterator @3 () -> (it :Iterator(VideoQuery) );
-
-    # 根据日期和一列视频，获取这些视频在该日期对应的数据
-    # 如果没有找到数据，则所有 field 均空
-    getVideoData @4 (videos :List(VideoQuery), date :DayDate) -> (data :List(AddressingDataEntry));
+    # # 根据日期和一列视频，获取这些视频在该日期对应的数据
+    # # 如果没有找到数据，则所有 field 均空
+    # getVideoData @4 (videos :List(VideoQuery), date :DayDate) -> (data :List(AddressingDataEntry));
 
 }
 

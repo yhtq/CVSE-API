@@ -23,7 +23,9 @@ interface Cvse {
     struct ModifyEntry {
         avid @0 :Text;  # 视频 AV 号
         bvid @1 :Text;  # 视频 BV 号
-        hasRanks @2 :Bool;  # 是否修改榜单收录信息
+        hasIsExamined @2 :Bool;  # 是否修改审核信息
+        isExamined @3 :Bool;  # 是否已审核
+        hasRanks @4 :Bool;  # 是否修改榜单收录信息
         ranks @3 :List(Rank);  # 应收录的榜单，空列表表示都不收录
         hasIsRepublish @4 :Bool;  # 是否修改转载信息
         isRepublish @5 :Bool;  # 是否为转载
@@ -98,4 +100,3 @@ interface Cvse {
     lookupOneDataInfo @6 (indices :List(Index), from_date: Time, to_date: Time) -> (entries :List(RecordingDataEntry));
 
 }
-

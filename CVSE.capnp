@@ -26,11 +26,11 @@ interface Cvse {
         hasIsExamined @2 :Bool;  # 是否修改审核信息
         isExamined @3 :Bool;  # 是否已审核
         hasRanks @4 :Bool;  # 是否修改榜单收录信息
-        ranks @3 :List(Rank);  # 应收录的榜单，空列表表示都不收录
-        hasIsRepublish @4 :Bool;  # 是否修改转载信息
-        isRepublish @5 :Bool;  # 是否为转载
-        hasStaffInfo @6 :Bool;  # 是否修改 staff 信息
-        staffInfo @7 :Text;  # staff 信息
+        ranks @5 :List(Rank);  # 应收录的榜单，空列表表示都不收录
+        hasIsRepublish @6 :Bool;  # 是否修改转载信息
+        isRepublish @7 :Bool;  # 是否为转载
+        hasStaffInfo @8 :Bool;  # 是否修改 staff 信息
+        staffInfo @9 :Text;  # staff 信息
     }
 
     updateModifyEntry @0 (entries :List(ModifyEntry));

@@ -2,10 +2,9 @@
 
 interface Cvse {
 
-    struct DayDate {
-        year @0 :Int16;
-        month @1 :Int8;
-        day @2 :Int8;
+    struct Time {
+        seconds @0 :Int64;
+        nanoseconds @1 :Int32;
     }
 
     struct Rank {
@@ -18,42 +17,51 @@ interface Cvse {
     }
 
     # 对数据库中已有数据的视频，修改其收录信息
-    # 这些信息中，avid bvid 是必须的，其他信息若为空（Capnp 默认允许任何一个 field 为空）
+    # 这些信息中，avid bvid 是必须的，其他信息若为空
+    # 由于 Server 实现问题，目前要求所有 field 都提供，可将 has 设为 false
     # 则不做改动
     struct ModifyEntry {
         avid @0 :Text;  # 视频 AV 号
         bvid @1 :Text;  # 视频 BV 号
-        ranks @2 :List(Rank);  # 应收录的榜单，空列表表示都不收录
-        isRepublish @3 :Bool;  # 是否为转载
-        staffInfo @4 :Text;  # staff 信息
+        hasRanks @2 :Bool;  # 是否修改榜单收录信息
+        ranks @3 :List(Rank);  # 应收录的榜单，空列表表示都不收录
+        hasIsRepublish @4 :Bool;  # 是否修改转载信息
+        isRepublish @5 :Bool;  # 是否为转载
+        hasStaffInfo @6 :Bool;  # 是否修改 staff 信息
+        staffInfo @7 :Text;  # staff 信息
     }
 
     updateModifyEntry @0 (entries :List(ModifyEntry));
 
     # 录入新曲
     # 所有信息均必须
-    struct AddressingNewEntry {
+    struct RecordingNewEntry {
         avid @0 :Text;  # 视频 AV 号
         bvid @1 :Text;  # 视频 BV 号
         title @2 :Text;  # 视频标题
         uploader @3 :Text;  # 投稿人
         upFace @4 :Text;  # 投稿人头像 URL
         copyright @5 :Int32;  # 版权类型，0 自制，1 转载，可能为 2
-        pubdate @6 :Text;  # 发布时间，格式 YYYY-MM-DD HH:MM:SS
+        pubdate @6 :Time;  # 发布时间
         duration @7 :Int32;  # 视频时长，单位秒
         page @8 :Int32;  # 分 P 个数
         cover @9 :Text;  # 视频封面 URL
         desc @10 :Text;  # 视频简介
         tags @11 :List(Text);  # 视频标签列表
+        isExamined @12 :Bool;  # 是否已经收录
+        # 若未被收录，下面的字段任意填写即可
+        ranks @13 :List(Rank);  # 应收录的榜单，空列表表示都不收录
+        isRepublish @14 :Bool;  # 是否为转载
+        staffInfo @15 :Text;  # staff 信息
     }
 
     # 录入新视频
-    updateNewEntry @1 (entries :List(AddressingNewEntry));
+    updateNewEntry @1 (entries :List(RecordingNewEntry));
 
     # 录入数据
     # 所有信息均必须
-    # 新曲也需要使用该接口录入
-    struct AddressingDataEntry {
+    # 新曲也需要使用该接口录入数据
+    struct RecordingDataEntry {
         avid @0 :Text;  # 视频 AV 号
         bvid @1 :Text;  # 视频 BV 号
         view @2 :Int64;  # 播放数
@@ -63,27 +71,31 @@ interface Cvse {
         danmaku @6 :Int64;  # 弹幕数
         reply @7 :Int64;  # 评论数
         share @8 :Int64;  # 分享数
-        date @9 :DayDate;  # 数据对应的日期
+        date @9 :Time; # 采集时间的时间戳
     }
 
     # 录入旧曲信息
-    updateAddressingDataEntry @2 (entries :List(AddressingDataEntry) );
+    updateRecordingDataEntry @2 (entries :List(RecordingDataEntry) );
 
-    # interface Iterator(T) {
-    #     getHandle @0 () -> (handle :Int64);
-    #     # 当遍历完成后，handle 会自动销毁
-    #     next @1 (handle :Int64, count :Int32) -> (items :List(T), hasMore :Bool);
-    # }
-    # # 查询数据库中已有的视频
-    # struct VideoQuery {
-    #     avid @0 :Text;
-    #     bvid @1 :Text;
-    # }
-    # getVideoIterator @3 () -> (it :Iterator(VideoQuery) );
+    struct Index {
+        avid @0 :Text;  # 视频 AV 号
+        bvid @1 :Text;  # 视频 BV 号
+    }
+    # 获取所有数据库中信息
+    # 参数 get_unexamined 指示是否获取未经收录的项
+    # 参数 get_unincluded 指示是否获取未被收录的项
+    getAll @3 (get_unexamined :Bool, get_unincluded :Bool) -> (indices :List(Index));
 
-    # # 根据日期和一列视频，获取这些视频在该日期对应的数据
-    # # 如果没有找到数据，则所有 field 均空
-    # getVideoData @4 (videos :List(VideoQuery), date :DayDate) -> (data :List(AddressingDataEntry));
+    # 获取指定视频的信息
+    # 若其中某些项未找到，则会报错
+    lookupMetaInfo @4 (indices :List(Index)) -> (entries :List(RecordingNewEntry));
+
+    # 获取指定视频在指定时间段的数据
+    lookupDataInfo @5 (indices :List(Index), from_date: Time, to_date: Time) -> (entries :List(List(RecordingDataEntry)));
+
+    # 获取指定视频在指定时间段的某个数据
+    # 若其中某些项未找到，则会报错
+    lookupOneDataInfo @6 (indices :List(Index), from_date: Time, to_date: Time) -> (entries :List(RecordingDataEntry));
 
 }
 

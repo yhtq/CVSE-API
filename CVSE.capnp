@@ -2,6 +2,8 @@
 
 interface Cvse {
 
+    # UTC 时间戳
+    # seconds 为秒数，nanoseconds 为纳秒数
     struct Time {
         seconds @0 :Int64;
         nanoseconds @1 :Int32;
@@ -86,16 +88,22 @@ interface Cvse {
     # 获取所有数据库中信息
     # 参数 get_unexamined 指示是否获取未经收录的项
     # 参数 get_unincluded 指示是否获取未被收录的项
-    getAll @3 (get_unexamined :Bool, get_unincluded :Bool) -> (indices :List(Index));
+    # 参数 from_date 和 to_date 指定 pubdate 的时间范围 [from_date, to_date)
+    getAll @3 (
+        get_unexamined :Bool,
+        get_unincluded :Bool,
+        from_date: Time,
+        to_date: Time
+    ) -> (indices :List(Index));
 
     # 获取指定视频的信息
     # 若其中某些项未找到，则会报错
     lookupMetaInfo @4 (indices :List(Index)) -> (entries :List(RecordingNewEntry));
 
-    # 获取指定视频在指定时间段的数据
+    # 获取指定视频在指定时间段 [from_date, to_date) 的数据
     lookupDataInfo @5 (indices :List(Index), from_date: Time, to_date: Time) -> (entries :List(List(RecordingDataEntry)));
 
-    # 获取指定视频在指定时间段的某个数据
+    # 获取指定视频在指定时间段 [from_date, to_date) 的某个数据
     # 若其中某些项未找到，则会报错
     lookupOneDataInfo @6 (indices :List(Index), from_date: Time, to_date: Time) -> (entries :List(RecordingDataEntry));
 

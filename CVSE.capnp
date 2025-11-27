@@ -53,14 +53,15 @@ interface Cvse {
         desc @10 :Text;  # 视频简介
         tags @11 :List(Text);  # 视频标签列表
         isExamined @12 :Bool;  # 是否已经收录
-        # 若未被收录，下面的字段任意填写即可
         ranks @13 :List(Rank);  # 应收录的榜单，空列表表示都不收录
         isRepublish @14 :Bool;  # 是否为转载
         staffInfo @15 :Text;  # staff 信息
     }
 
     # 录入新视频
-    updateNewEntry @1 (entries :List(RecordingNewEntry));
+    # 若 replace 为 true，则会替换已有的同 BV 号的视频信息
+    # 否则，遇到相同 BV 号的视频会报错（但其余信息仍会被录入）
+    updateNewEntry @1 (entries :List(RecordingNewEntry), replace: Bool);
 
     # 录入数据
     # 所有信息均必须

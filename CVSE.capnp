@@ -108,4 +108,44 @@ interface Cvse {
     # 若其中某些项未找到，则会报错
     lookupOneDataInfo @6 (indices :List(Index), from_date: Time, to_date: Time) -> (entries :List(RecordingDataEntry));
 
+    # 重新对某期排行榜计算排名信息
+    # 自动排除 is_examined 为 True 以及 in 该 rank 为 False 的视频
+    # 如果 contain_unexamined 为 True，则也包含 is_examined 为 False 并被判定为该 rank 的视频
+    # 否则，只包含 is_examined 为 True 的视频
+    # 注意 include_unexamined 参数不同的计算结果不会互相覆盖
+    # 如果 lock 为 True，则在计算完成后锁定该期排行榜
+    # 锁定后无法再次计算，再次调用该函数会报错
+    # 目前的实现比较低效，不要过于频繁的调用
+    reCalculateRankings @7 (rank :Rank, index :Int32, contain_unexamined :Bool, lock :Bool);
+
+    struct RankingInfoEntry {
+        avid @0 :Text;  # 视频 AV 号
+        bvid @1 :Text;  # 视频 BV 号
+        prev @2 :RecordingDataEntry;  # 上期数据，对于新曲而言只是占位符，无实际含义（包括 avid bvid 也是占位符）
+        curr @3 :RecordingDataEntry;  # 本期数据
+        isNew @4 :Bool;  # 是否为新曲
+        view @5 :Int64;  # 播放数变化
+        like @6 :Int64;  # 点赞数变化
+        share @7 :Int64;  # 分享数变化
+        favorite @8 :Int64;  # 收藏数变化
+        coin @9 :Int64;  # 硬币数变化
+        reply @10 :Int64;  # 评论数变化
+        danmaku @11 :Int64;  # 弹幕数变化
+        pointA @12 :Float64;  # 得点A
+        pointB @13 :Float64;  # 得点B
+        pointC @14 :Float64;  # 得点C
+        fixA @15 :Float64;  # 修正A
+        fixB @16 :Float64;  # 修正B
+        fixC @17 :Float64;  # 修正C
+        scoreA @18 :Float64;  # 分数A
+        scoreB @19 :Float64;  # 分数B
+        scoreC @20 :Float64;  # 分数C
+        totalScore @21 :Float64;  # 总分
+        rank @22 :Int32;  # 排名
+    }
+
+    # 得到参数完全相同的，上一个接口计算的信息
+    # （如果没有计算过，会报错）
+    getAllRankingInfo @8 (rank :Rank, index :Int32, contain_unexamined :Bool) -> (entries :List(RankingInfoEntry) );
+
 }

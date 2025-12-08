@@ -144,12 +144,19 @@ interface Cvse {
         rank @22 :Int32;  # 排名
     }
 
-    # 得到参数完全相同的，上一个接口计算的信息
-    # 涵盖排名 [from_rank, to_rank)
+    # 得到参数完全相同的，上一个接口计算的信息中，排名 [from_rank, to_rank) 的索引
     # 若尚未计算，则会返回空列表
     getAllRankingInfo @8 (
         rank :Rank, index :Int32, contain_unexamined :Bool,
         from_rank :Int32, to_rank :Int32
+    ) -> (entries :List(Index) );
+
+    # 得到参数完全相同的，上一个接口计算的信息中，排名 [from_rank, to_rank) 的详细信息
+    # 注意，不保证每个 index 都找到结果。如果未找到，则跳过对应项
+    # 如果未计算，则返回空列表
+    lookupRankingInfo @9 (
+        rank :Rank, index :Int32, contain_unexamined :Bool,
+        indices :List(Index)
     ) -> (entries :List(RankingInfoEntry) );
 
 }

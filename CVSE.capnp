@@ -144,6 +144,20 @@ interface Cvse {
         rank @22 :Int32;  # 排名
     }
 
+    struct RankingMetaInfoStat {
+        count @1 :UInt32;  # 总数
+        totalView @2 :Int64;  # 总播放数
+        totalLike @3 :Int64;  # 总点赞数
+        totalCoin @4 :Int64;  # 总硬币数
+        totalFavorite @5 :Int64;  # 总收藏数
+        totalShare @6 :Int64;  # 总分享数
+        totalReply @7 :Int64;  # 总评论数
+        totalDanmaku @8 :Int64;  # 总弹幕数
+        totalNew @9 :Int64;  # 总新增
+        startTime @10 :Time;  # 开始时间
+        endTime @11 :Time;  # 结束时间
+    }
+
     # 得到参数完全相同的，上一个接口计算的信息中，排名 [from_rank, to_rank) 的索引
     # 若尚未计算，则会返回空列表
     getAllRankingInfo @8 (
@@ -158,5 +172,9 @@ interface Cvse {
         rank :Rank, index :Int32, contain_unexamined :Bool,
         indices :List(Index)
     ) -> (entries :List(RankingInfoEntry) );
+
+    lookupRankingMetaInfo @12 (
+        rank :Rank, index :Int32, contain_unexamined :Bool
+    ) -> (stat :RankingMetaInfoStat);
 
 }

@@ -154,8 +154,8 @@ interface Cvse {
         totalReply @7 :Int64;  # 总评论数
         totalDanmaku @8 :Int64;  # 总弹幕数
         totalNew @9 :Int64;  # 总新增
-        startTime @10 :Time;  # 开始时间
-        endTime @11 :Time;  # 结束时间
+        startTime @0 :Time;  # 开始时间
+        endTime @10 :Time;  # 结束时间
     }
 
     # 得到参数完全相同的，上一个接口计算的信息中，排名 [from_rank, to_rank) 的索引
@@ -173,7 +173,7 @@ interface Cvse {
         indices :List(Index)
     ) -> (entries :List(RankingInfoEntry) );
 
-    lookupRankingMetaInfo @12 (
+    lookupRankingMetaInfo @10 (
         rank :Rank, index :Int32, contain_unexamined :Bool
     ) -> (stat :RankingMetaInfoStat);
 

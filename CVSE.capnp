@@ -115,7 +115,7 @@ interface Cvse {
     # 注意 include_unexamined 参数不同的计算结果不会互相覆盖
     # 如果 lock 为 True，则在计算完成后锁定该期排行榜
     # 锁定后无法再次计算，再次调用该函数会报错
-    # 目前的实现比较低效，不要过于频繁的调用
+    # 全部重新计算开销比较大（需要运行大约一分钟），不要过于频繁的调用
     reCalculateRankings @7 (rank :Rank, index :Int32, contain_unexamined :Bool, lock :Bool);
 
     struct RankingInfoEntry {
@@ -145,7 +145,11 @@ interface Cvse {
     }
 
     # 得到参数完全相同的，上一个接口计算的信息
-    # （如果没有计算过，会报错）
-    getAllRankingInfo @8 (rank :Rank, index :Int32, contain_unexamined :Bool) -> (entries :List(RankingInfoEntry) );
+    # 涵盖排名 [from_rank, to_rank)
+    # 若尚未计算，则会返回空列表
+    getAllRankingInfo @8 (
+        rank :Rank, index :Int32, contain_unexamined :Bool,
+        from_rank :Int32, to_rank :Int32
+    ) -> (entries :List(RankingInfoEntry) );
 
 }

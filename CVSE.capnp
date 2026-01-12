@@ -98,7 +98,7 @@ interface Cvse {
     ) -> (indices :List(Index));
 
     # 获取指定视频的信息
-    # 若其中某些项未找到，则会报错
+    # 如果未找到，则跳过对应项
     lookupMetaInfo @4 (indices :List(Index)) -> (entries :List(RecordingNewEntry));
 
     # 获取指定视频在指定时间段 [from_date, to_date) 的数据

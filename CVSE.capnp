@@ -141,7 +141,19 @@ interface Cvse {
         scoreB @19 :Float64;  # 分数B
         scoreC @20 :Float64;  # 分数C
         totalScore @21 :Float64;  # 总分
-        rank @22 :Int32;  # 排名
+        rank @22 :Int32;  # 排名，若是 sh 或者 hot，则为 0
+        enum SpecialRank {
+            normal @0;  # 无特殊排名
+            sh @1; 
+            hot @2;
+        }
+        specialRank @23 :SpecialRank;  # 特殊排名
+        enum RankPosition {
+            main @0;  # 主榜
+            side @1;  # 侧榜
+            none @2; # 非榜单内
+        }
+        rankPosition @24 :RankPosition;  # 排名位置
     }
 
     struct RankingMetaInfoStat {

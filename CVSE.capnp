@@ -154,6 +154,7 @@ interface Cvse {
             none @2; # 非榜单内
         }
         rankPosition @24 :RankPosition;  # 排名位置
+        onMainCountInTenWeeks @25 :Int32;  # 十周内上主榜的次数
     }
 
     struct RankingMetaInfoStat {
